@@ -1,0 +1,16 @@
+services:
+  postgresql:
+    image: postgres:18.2
+    container_name: device-monitoring-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: device_monitoring
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql
+
+volumes:
+  db_data:
