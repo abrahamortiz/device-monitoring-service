@@ -25,6 +25,9 @@ export const CreateDeviceSchema = DeviceSchema.omit({
   last_seen_at: true,
 });
 
+export const UpdateDeviceSchema = CreateDeviceSchema.optional();
+
 export type Device = z.infer<typeof DeviceSchema>;
 export type DeviceStatus = z.infer<typeof DeviceStatusSchema>;
-export type CreateDeviceDto = z.infer<typeof CreateDeviceSchema>;
+export type CreateDevice = z.infer<typeof CreateDeviceSchema>;
+export type UpdateDevice = z.infer<typeof UpdateDeviceSchema>;

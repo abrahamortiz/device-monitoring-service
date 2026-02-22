@@ -15,5 +15,11 @@ export const DeviceModelSchema = z.strictObject({
   description: z.string(),
 });
 
+export const CreateDeviceModelSchema = DeviceModelSchema.omit({
+  pk: true,
+  id: true,
+});
+
 export type DeviceCategory = z.infer<typeof DeviceCategorySchema>;
 export type DeviceModel = z.infer<typeof DeviceModelSchema>;
+export type CreateDeviceModel = z.infer<typeof CreateDeviceModelSchema>;
