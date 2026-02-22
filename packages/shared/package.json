@@ -1,0 +1,26 @@
+{
+  "name": "@device-monitoring-service/shared",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsx --watch src/index.ts",
+    "build": "tsup --format esm --env.NODE_ENV production",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.26.0",
+  "dependencies": {
+    "zod": "^4.3.6"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^25.3.0",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
