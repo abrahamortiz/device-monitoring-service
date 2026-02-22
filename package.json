@@ -1,0 +1,31 @@
+{
+  "name": "device-monitoring-service",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "prepare": "husky"
+  },
+  "author": "Abraham Ortiz",
+  "license": "ISC",
+  "packageManager": "pnpm@10.26.0",
+  "engines": {
+    "node": ">=24.13.1"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@commitlint/cli": "^20.4.2",
+    "@commitlint/config-conventional": "^20.4.2",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.0.1",
+    "globals": "^17.3.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "typescript-eslint": "^8.56.0"
+  },
+  "lint-staged": {
+    "**/*.{js,ts,tsx}": [
+      "eslint --fix"
+    ]
+  }
+}
