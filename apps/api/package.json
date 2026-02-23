@@ -1,0 +1,36 @@
+{
+  "name": "@device-monitoring-service/api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx --watch src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsup --format esm --env.NODE_ENV production",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:push": "npx drizzle-kit push",
+    "db:seed": "tsx src/infrastructure/db/seed.ts"
+  },
+  "keywords": [],
+  "author": "Abraham Ortiz",
+  "license": "ISC",
+  "packageManager": "pnpm@10.26.0",
+  "devDependencies": {
+    "@types/node": "^25.3.0",
+    "@types/pg": "^8.16.0",
+    "drizzle-kit": "^0.31.9",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "type": "module",
+  "dependencies": {
+    "@device-monitoring-service/shared": "workspace:*",
+    "dotenv": "^17.3.1",
+    "drizzle-orm": "^0.45.1",
+    "drizzle-seed": "^0.3.1",
+    "fastify": "^5.7.4",
+    "pg": "^8.18.0",
+    "zod": "^4.3.6"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "paths": {
+      "@device-monitoring-service/shared": ["../../packages/shared/src"]
+    }
+  },
+  "include": ["src"]
+}
