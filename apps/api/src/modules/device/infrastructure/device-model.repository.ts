@@ -4,16 +4,16 @@ import type {
   UpdateDeviceModel,
 } from "@device-monitoring-service/shared";
 import type { PgDatabase } from "drizzle-orm/pg-core";
-import type { IDatabase } from "../../infrastructure/db/database.interface.ts";
+import type { IDatabase } from "../../../infrastructure/db/database.interface.ts";
 import { and, eq, isNull } from "drizzle-orm";
-import { deviceModels } from "../../infrastructure/db/schema.ts";
-import { DatabaseError } from "../../shared/errors/database.error.ts";
+import { deviceModels } from "../../../infrastructure/db/schema.ts";
+import { DatabaseError } from "../../../shared/errors/database.error.ts";
 
 export interface IDeviceModelRepository {
   insert(data: CreateDeviceModel): Promise<DeviceModel>;
   findAll(): Promise<DeviceModel[]>;
   findById(id: string): Promise<DeviceModel | null>;
-  update(id: string, data: UpdateDeviceModel): Promise<DeviceModel>;
+  update(id: string, data: UpdateDeviceModel): Promise<DeviceModel | null>;
   softDelete(id: string): Promise<boolean>;
 }
 
@@ -34,7 +34,7 @@ export class DeviceModelRepository implements IDeviceModelRepository {
 
       return result[0];
     } catch (error: unknown) {
-      let message = "Database error during user creation";
+      let message = "Database error during device model creation";
 
       if (
         error &&
@@ -71,14 +71,14 @@ export class DeviceModelRepository implements IDeviceModelRepository {
   public async update(
     id: string,
     data: UpdateDeviceModel,
-  ): Promise<DeviceModel> {
+  ): Promise<DeviceModel | null> {
     const result = await this.db
       .update(deviceModels)
       .set({ ...data, updated_at: new Date() })
       .where(eq(deviceModels.id, id))
       .returning();
 
-    return result[0];
+    return result[0] || null;
   }
 
   public async softDelete(id: string): Promise<boolean> {
