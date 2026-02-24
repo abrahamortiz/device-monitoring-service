@@ -67,6 +67,7 @@ const main = async () => {
           support_grpc: f.default({ defaultValue: false }),
           ip_address: f.valuesFromArray({
             values: generateIpAddresses(devicesQty),
+            isUnique: true,
           }),
           is_monitored: f.default({ defaultValue: true }),
           last_seen_at: f.default({ defaultValue: null }),

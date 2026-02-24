@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import * as t from "drizzle-orm/pg-core";
 
 export const deviceCategoriesEnum = t.pgEnum("device_categories", [
@@ -27,23 +28,34 @@ export const deviceModels = t.pgTable("device_models", {
   ...timestamps,
 });
 
-export const devices = t.pgTable("devices", {
-  id: t.uuid().primaryKey().defaultRandom(),
-  model_id: t
-    .uuid()
-    .notNull()
-    .references(() => deviceModels.id),
-  ip_address: t.inet().unique().notNull(),
-  hw_version: t.varchar(),
-  sw_version: t.varchar(),
-  fw_version: t.varchar(),
-  checksum: t.varchar(),
-  current_status: deviceStatusEnum(),
-  support_grpc: t.boolean().notNull().default(false),
-  is_monitored: t.boolean().notNull().default(true),
-  last_seen_at: t.timestamp({ withTimezone: true }),
-  ...timestamps,
-});
+export const devices = t.pgTable(
+  "devices",
+  {
+    id: t.uuid().primaryKey().defaultRandom(),
+    model_id: t
+      .uuid()
+      .notNull()
+      .references(() => deviceModels.id),
+    ip_address: t.inet().notNull(),
+    hw_version: t.varchar(),
+    sw_version: t.varchar(),
+    fw_version: t.varchar(),
+    checksum: t.varchar(),
+    current_status: deviceStatusEnum(),
+    support_grpc: t.boolean().notNull().default(false),
+    is_monitored: t.boolean().notNull().default(true),
+    last_seen_at: t.timestamp({ withTimezone: true }),
+    ...timestamps,
+  },
+  (table) => {
+    return {
+      uniqueIpAddressPerActiveDevice: t
+        .uniqueIndex("devices_unique_ip_address")
+        .on(table.ip_address)
+        .where(sql`${table.deleted_at} IS NULL`),
+    };
+  },
+);
 
 export const deviceStatusLog = t.pgTable("device_status_log", {
   id: t.uuid().primaryKey().defaultRandom(),
