@@ -51,8 +51,8 @@ export const deviceStatusLog = t.pgTable("device_status_log", {
     .uuid()
     .notNull()
     .references(() => devices.id),
-  status: deviceStatusEnum(),
-  response_time_ms: t.decimal(),
+  status: deviceStatusEnum().notNull(),
+  response_time_ms: t.integer().notNull(),
   error_message: t.varchar(),
-  checked_at: t.timestamp({ withTimezone: true }),
+  checked_at: t.timestamp({ withTimezone: true }).notNull(),
 });

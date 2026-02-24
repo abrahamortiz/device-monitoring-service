@@ -6,12 +6,13 @@ export const DeviceStatusLogSchema = z.strictObject({
   device_id: z.uuid(),
   status: DeviceStatusSchema,
   response_time_ms: z.int().nonnegative(),
-  error_message: z.string(),
+  error_message: z.string().nullable(),
   checked_at: z.date(),
 });
 
-export const CreateDeviceStatusLog = DeviceStatusLogSchema.omit({
+export const CreateDeviceStatusLogSchema = DeviceStatusLogSchema.omit({
   id: true,
 });
 
 export type DeviceStatusLog = z.infer<typeof DeviceStatusLogSchema>;
+export type CreateDeviceStatusLog = z.infer<typeof CreateDeviceStatusLogSchema>;
