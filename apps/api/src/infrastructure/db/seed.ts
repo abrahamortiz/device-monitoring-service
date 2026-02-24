@@ -1,24 +1,28 @@
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { reset, seed } from "drizzle-seed";
+import { appConfig } from "../../config/app.config.ts";
 import * as schema from "./schema.ts";
 
-const main = async () => {
-  const dbUrl = process.env.DATABASE_URL;
+const generateIpAddresses = (qty: number): string[] =>
+  Array.from({ length: qty }, (_, i) => `192.168.1.${10 + i}`);
 
-  if (!dbUrl) {
+const main = async () => {
+  const { databaseUrl, devicesQty } = appConfig;
+
+  if (!databaseUrl) {
     console.error("Database URL not found");
     process.exit(1);
   }
 
-  const db = drizzle(dbUrl);
+  const db = drizzle(databaseUrl);
 
   console.info("Seeding database...");
 
   try {
     await reset(db, schema);
 
-    await db
+    const models = await db
       .insert(schema.deviceModels)
       .values([
         {
@@ -44,43 +48,31 @@ const main = async () => {
             "Complete entry and exit control for a single door with two readers",
         },
       ])
-      .onConflictDoNothing();
+      .onConflictDoNothing()
+      .returning();
+
+    const modelIds = models.map((model) => model.id);
+    const now = new Date();
 
     await seed(db, { devices: schema.devices }).refine((f) => ({
       devices: {
-        count: 15,
+        count: devicesQty,
         columns: {
-          model_id: f.int({ minValue: 1, maxValue: 4 }),
-          hw_version: f.valuesFromArray({
-            values: ["1.0.0", "1.0.0", "1.0.1", "2.0.0"],
-          }),
-          sw_version: f.valuesFromArray({
-            values: ["1.0.0", "1.0.0", "1.0.1", "2.0.0"],
-          }),
-          fw_version: f.valuesFromArray({
-            values: ["1.0.0", "1.0.0", "1.0.1", "2.0.0"],
-          }),
+          model_id: f.valuesFromArray({ values: modelIds }),
+          hw_version: f.default({ defaultValue: null }),
+          sw_version: f.default({ defaultValue: null }),
+          fw_version: f.default({ defaultValue: null }),
+          checksum: f.default({ defaultValue: null }),
+          current_status: f.default({ defaultValue: null }),
+          support_grpc: f.default({ defaultValue: false }),
           ip_address: f.valuesFromArray({
-            values: [
-              "192.168.1.10",
-              "192.168.1.11",
-              "192.168.1.12",
-              "192.168.1.13",
-              "192.168.1.14",
-              "192.168.1.15",
-              "192.168.1.16",
-              "192.168.1.17",
-              "192.168.1.18",
-              "192.168.1.19",
-              "192.168.1.20",
-              "192.168.1.21",
-              "192.168.1.22",
-              "192.168.1.23",
-              "192.168.1.24",
-            ],
+            values: generateIpAddresses(devicesQty),
           }),
-          is_monitored: f.valuesFromArray({ values: [true] }),
-          // last_seen_at: f.default(null)
+          is_monitored: f.default({ defaultValue: true }),
+          last_seen_at: f.default({ defaultValue: null }),
+          created_at: f.default({ defaultValue: now }),
+          updated_at: f.default({ defaultValue: now }),
+          deleted_at: f.default({ defaultValue: null }),
         },
       },
     }));
