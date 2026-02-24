@@ -30,3 +30,10 @@ export type DeviceCategory = z.infer<typeof DeviceCategorySchema>;
 export type DeviceModel = z.infer<typeof DeviceModelSchema>;
 export type CreateDeviceModel = z.infer<typeof CreateDeviceModelSchema>;
 export type UpdateDeviceModel = z.infer<typeof UpdateDeviceModelSchema>;
+
+export type DeviceModelResponse = {
+  id: string;
+  category: DeviceCategory;
+  name: string;
+  description: string | null;
+};
