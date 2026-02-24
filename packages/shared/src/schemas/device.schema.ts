@@ -3,25 +3,23 @@ import * as z from "zod";
 export const DeviceStatusSchema = z.enum(["UP", "DOWN", "ERROR"]);
 
 export const DeviceSchema = z.strictObject({
-  pk: z.int(),
   id: z.uuid(),
-  model_id: z.int(),
+  model_id: z.uuid(),
   ip_address: z.ipv4(),
-  hw_version: z.string(),
-  sw_version: z.string(),
-  fw_version: z.string(),
-  checksum: z.string(),
-  current_status: DeviceStatusSchema,
-  support_grpc: z.boolean(),
-  is_monitored: z.boolean(),
-  last_seen_at: z.date(),
+  hw_version: z.string().nullable(),
+  sw_version: z.string().nullable(),
+  fw_version: z.string().nullable(),
+  checksum: z.string().nullable(),
+  current_status: DeviceStatusSchema.nullable(),
+  support_grpc: z.boolean().default(false),
+  is_monitored: z.boolean().default(true),
+  last_seen_at: z.date().nullable(),
   created_at: z.date(),
   updated_at: z.date(),
   deleted_at: z.date().nullable(),
 });
 
 export const CreateDeviceSchema = DeviceSchema.omit({
-  pk: true,
   id: true,
   checksum: true,
   current_status: true,

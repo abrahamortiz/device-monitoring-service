@@ -19,56 +19,38 @@ export const timestamps = {
   deleted_at: t.timestamp({ withTimezone: true }),
 };
 
-export const deviceModels = t.pgTable(
-  "device_models",
-  {
-    pk: t.integer().primaryKey().generatedAlwaysAsIdentity(),
-    id: t.uuid().defaultRandom().notNull(),
-    category: deviceCategoriesEnum().notNull(),
-    name: t.varchar().notNull().unique(),
-    description: t.varchar(),
-    ...timestamps,
-  },
-  (table) => {
-    return {
-      idIndex: t.index("device_models_id_idx").on(table.id),
-    };
-  },
-);
+export const deviceModels = t.pgTable("device_models", {
+  id: t.uuid().primaryKey().defaultRandom(),
+  category: deviceCategoriesEnum().notNull(),
+  name: t.varchar().notNull().unique(),
+  description: t.varchar(),
+  ...timestamps,
+});
 
-export const devices = t.pgTable(
-  "devices",
-  {
-    pk: t.integer().primaryKey().generatedAlwaysAsIdentity(),
-    id: t.uuid().defaultRandom().notNull(),
-    model_id: t
-      .integer()
-      .notNull()
-      .references(() => deviceModels.pk),
-    ip_address: t.inet().unique().notNull(),
-    hw_version: t.varchar(),
-    sw_version: t.varchar(),
-    fw_version: t.varchar(),
-    checksum: t.varchar(),
-    current_status: deviceStatusEnum(),
-    support_grpc: t.boolean().default(false),
-    is_monitored: t.boolean().default(true),
-    last_seen_at: t.timestamp({ withTimezone: true }),
-    ...timestamps,
-  },
-  (table) => {
-    return {
-      idIndex: t.index("devices_id_idx").on(table.id),
-    };
-  },
-);
+export const devices = t.pgTable("devices", {
+  id: t.uuid().primaryKey().defaultRandom(),
+  model_id: t
+    .uuid()
+    .notNull()
+    .references(() => deviceModels.id),
+  ip_address: t.inet().unique().notNull(),
+  hw_version: t.varchar(),
+  sw_version: t.varchar(),
+  fw_version: t.varchar(),
+  checksum: t.varchar(),
+  current_status: deviceStatusEnum(),
+  support_grpc: t.boolean().notNull().default(false),
+  is_monitored: t.boolean().notNull().default(true),
+  last_seen_at: t.timestamp({ withTimezone: true }),
+  ...timestamps,
+});
 
 export const deviceStatusLog = t.pgTable("device_status_log", {
-  pk: t.integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: t.uuid().primaryKey().defaultRandom(),
   device_id: t
-    .integer()
+    .uuid()
     .notNull()
-    .references(() => devices.pk),
+    .references(() => devices.id),
   status: deviceStatusEnum(),
   response_time_ms: t.decimal(),
   error_message: t.varchar(),

@@ -8,7 +8,6 @@ export const DeviceCategorySchema = z.enum([
 ]);
 
 export const DeviceModelSchema = z.strictObject({
-  pk: z.int(),
   id: z.uuid(),
   category: DeviceCategorySchema,
   name: z.string(),
@@ -19,7 +18,6 @@ export const DeviceModelSchema = z.strictObject({
 });
 
 export const CreateDeviceModelSchema = DeviceModelSchema.omit({
-  pk: true,
   id: true,
   created_at: true,
   updated_at: true,
