@@ -1,10 +1,10 @@
+import type { PgDatabase } from "drizzle-orm/pg-core";
+import type { IDatabase } from "../../../infrastructure/db/database.interface.ts";
 import type {
   CreateDeviceModel,
   DeviceModel,
   UpdateDeviceModel,
-} from "@device-monitoring-service/shared";
-import type { PgDatabase } from "drizzle-orm/pg-core";
-import type { IDatabase } from "../../../infrastructure/db/database.interface.ts";
+} from "../domain/device-model.schema.ts";
 import { and, eq, isNull } from "drizzle-orm";
 import { deviceModels } from "../../../infrastructure/db/schema.ts";
 import { DatabaseError } from "../../../shared/errors/database.error.ts";

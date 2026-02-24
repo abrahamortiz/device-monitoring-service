@@ -1,9 +1,9 @@
+import type { PgDatabase } from "drizzle-orm/pg-core";
 import type {
   CreateDevice,
   Device,
   UpdateDevice,
-} from "@device-monitoring-service/shared";
-import type { PgDatabase } from "drizzle-orm/pg-core";
+} from "../domain/device.schema.ts";
 import type { IDatabase } from "../../../infrastructure/db/database.interface.ts";
 import { and, eq, isNull } from "drizzle-orm";
 import { devices } from "../../../infrastructure/db/schema.ts";

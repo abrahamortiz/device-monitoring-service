@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { DeviceStatusSchema } from "./device.schema.ts";
+import { DeviceStatusSchema } from "../../device/domain/device.schema.ts";
 
 export const DeviceStatusLogSchema = z.strictObject({
   id: z.uuid(),

@@ -1,9 +1,9 @@
+import type { PgDatabase } from "drizzle-orm/pg-core";
+import type { IDatabase } from "../../../infrastructure/db/database.interface.ts";
 import type {
   CreateDeviceStatusLog,
   DeviceStatusLog,
-} from "@device-monitoring-service/shared";
-import type { PgDatabase } from "drizzle-orm/pg-core";
-import type { IDatabase } from "../../../infrastructure/db/database.interface.ts";
+} from "../domain/device-status-log.schema.ts";
 import { eq } from "drizzle-orm";
 import { DatabaseError } from "../../../shared/errors/database.error.ts";
 import { deviceStatusLog } from "../../../infrastructure/db/schema.ts";
