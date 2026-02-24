@@ -12,14 +12,23 @@ export const DeviceModelSchema = z.strictObject({
   id: z.uuid(),
   category: DeviceCategorySchema,
   name: z.string(),
-  description: z.string(),
+  description: z.string().nullable(),
+  created_at: z.date(),
+  updated_at: z.date(),
+  deleted_at: z.date().nullable(),
 });
 
 export const CreateDeviceModelSchema = DeviceModelSchema.omit({
   pk: true,
   id: true,
+  created_at: true,
+  updated_at: true,
+  deleted_at: true,
 });
+
+export const UpdateDeviceModelSchema = CreateDeviceModelSchema.partial();
 
 export type DeviceCategory = z.infer<typeof DeviceCategorySchema>;
 export type DeviceModel = z.infer<typeof DeviceModelSchema>;
 export type CreateDeviceModel = z.infer<typeof CreateDeviceModelSchema>;
+export type UpdateDeviceModel = z.infer<typeof UpdateDeviceModelSchema>;

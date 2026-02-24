@@ -13,14 +13,21 @@ export const deviceStatusEnum = t.pgEnum("device_statuses", [
   "ERROR",
 ]);
 
+export const timestamps = {
+  created_at: t.timestamp({ withTimezone: true }).defaultNow().notNull(),
+  updated_at: t.timestamp({ withTimezone: true }).defaultNow().notNull(),
+  deleted_at: t.timestamp({ withTimezone: true }),
+};
+
 export const deviceModels = t.pgTable(
   "device_models",
   {
     pk: t.integer().primaryKey().generatedAlwaysAsIdentity(),
     id: t.uuid().defaultRandom().notNull(),
-    category: deviceCategoriesEnum(),
+    category: deviceCategoriesEnum().notNull(),
     name: t.varchar().notNull().unique(),
     description: t.varchar(),
+    ...timestamps,
   },
   (table) => {
     return {
@@ -46,7 +53,8 @@ export const devices = t.pgTable(
     current_status: deviceStatusEnum(),
     support_grpc: t.boolean().default(false),
     is_monitored: t.boolean().default(true),
-    last_seen_at: t.timestamp(),
+    last_seen_at: t.timestamp({ withTimezone: true }),
+    ...timestamps,
   },
   (table) => {
     return {
@@ -64,5 +72,5 @@ export const deviceStatusLog = t.pgTable("device_status_log", {
   status: deviceStatusEnum(),
   response_time_ms: t.decimal(),
   error_message: t.varchar(),
-  checked_at: t.timestamp(),
+  checked_at: t.timestamp({ withTimezone: true }),
 });

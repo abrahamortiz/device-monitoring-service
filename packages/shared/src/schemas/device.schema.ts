@@ -15,6 +15,9 @@ export const DeviceSchema = z.strictObject({
   support_grpc: z.boolean(),
   is_monitored: z.boolean(),
   last_seen_at: z.date(),
+  created_at: z.date(),
+  updated_at: z.date(),
+  deleted_at: z.date().nullable(),
 });
 
 export const CreateDeviceSchema = DeviceSchema.omit({
@@ -23,6 +26,9 @@ export const CreateDeviceSchema = DeviceSchema.omit({
   checksum: true,
   current_status: true,
   last_seen_at: true,
+  created_at: true,
+  updated_at: true,
+  deleted_at: true,
 });
 
 export const UpdateDeviceSchema = CreateDeviceSchema.optional();
