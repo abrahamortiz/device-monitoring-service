@@ -6,13 +6,14 @@ import type {
 } from "../domain/device.schema.ts";
 import type { IDatabase } from "../../../infrastructure/db/database.interface.ts";
 import { and, eq, isNull } from "drizzle-orm";
-import { devices } from "../../../infrastructure/db/schema.ts";
+import { deviceModels, devices } from "../../../infrastructure/db/schema.ts";
 import { DatabaseError } from "../../../shared/errors/database.error.ts";
 
 export interface IDeviceRepository {
   insert(data: CreateDevice): Promise<Device>;
   findAll(): Promise<Device[]>;
   findById(id: string): Promise<Device | null>;
+  findByIpAddress(ipAddress: string): Promise<Device | null>;
   update(id: string, data: UpdateDevice): Promise<Device | null>;
   softDelete(id: string): Promise<boolean>;
 }
@@ -27,8 +28,8 @@ export class DeviceRepository implements IDeviceRepository {
 
   public async insert(data: CreateDevice): Promise<Device> {
     try {
-      const [device] = await this.db.insert(devices).values(data).returning();
-      return device;
+      const [result] = await this.db.insert(devices).values(data).returning();
+      return result;
     } catch (error: unknown) {
       let message = "Database error during device creation";
 
@@ -49,38 +50,57 @@ export class DeviceRepository implements IDeviceRepository {
     const result = await this.db
       .select()
       .from(devices)
+      .leftJoin(deviceModels, eq(devices.model_id, deviceModels.id))
       .where(isNull(devices.deleted_at));
 
-    return result;
+    return result.map((row) => ({
+      ...row.devices,
+      model: row.device_models ?? undefined,
+    }));
   }
 
   public async findById(id: string): Promise<Device | null> {
-    const result = await this.db
+    const [result] = await this.db
       .select()
       .from(devices)
+      .leftJoin(deviceModels, eq(devices.model_id, deviceModels.id))
       .where(and(eq(devices.id, id), isNull(devices.deleted_at)))
       .limit(1);
 
-    return result[0] || null;
+    if (result) {
+      return { ...result.devices, model: result.device_models ?? undefined };
+    }
+
+    return null;
+  }
+
+  public async findByIpAddress(ipAddress: string): Promise<Device | null> {
+    const [result] = await this.db
+      .select()
+      .from(devices)
+      .where(and(eq(devices.ip_address, ipAddress), isNull(devices.deleted_at)))
+      .limit(1);
+
+    return result || null;
   }
 
   public async update(id: string, data: UpdateDevice): Promise<Device | null> {
-    const result = await this.db
+    const [result] = await this.db
       .update(devices)
       .set({ ...data, updated_at: new Date() })
       .where(eq(devices.id, id))
       .returning();
 
-    return result[0] || null;
+    return result || null;
   }
 
   public async softDelete(id: string): Promise<boolean> {
-    const result = await this.db
+    const [result] = await this.db
       .update(devices)
       .set({ deleted_at: new Date() })
       .where(eq(devices.id, id))
       .returning();
 
-    return result[0] ? true : false;
+    return result ? true : false;
   }
 }
