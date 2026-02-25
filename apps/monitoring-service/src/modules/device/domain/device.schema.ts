@@ -37,7 +37,13 @@ export const CreateDeviceSchema = DeviceSchema.omit({
   model: true,
 });
 
-export const UpdateDeviceSchema = CreateDeviceSchema.partial();
+export const UpdateDeviceSchema = DeviceSchema.omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+  deleted_at: true,
+  model: true,
+}).partial();
 
 export type Device = z.infer<typeof DeviceSchema>;
 export type DeviceStatus = z.infer<typeof DeviceStatusSchema>;
