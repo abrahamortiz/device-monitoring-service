@@ -13,6 +13,7 @@ export interface IDeviceModelRepository {
   insert(data: CreateDeviceModel): Promise<DeviceModel>;
   findAll(): Promise<DeviceModel[]>;
   findById(id: string): Promise<DeviceModel | null>;
+  findByName(name: string): Promise<DeviceModel | null>;
   update(id: string, data: UpdateDeviceModel): Promise<DeviceModel | null>;
   softDelete(id: string): Promise<boolean>;
 }
@@ -66,6 +67,16 @@ export class DeviceModelRepository implements IDeviceModelRepository {
       .limit(1);
 
     return result[0] || null;
+  }
+
+  public async findByName(name: string): Promise<DeviceModel | null> {
+    const [model] = await this.db
+      .select()
+      .from(deviceModels)
+      .where(and(eq(deviceModels.name, name), isNull(deviceModels.deleted_at)))
+      .limit(1);
+
+    return model || null;
   }
 
   public async update(
