@@ -12,6 +12,7 @@ import { DatabaseError } from "../../../shared/errors/database.error.ts";
 export interface IDeviceRepository {
   insert(data: CreateDevice): Promise<Device>;
   findAll(): Promise<Device[]>;
+  findMonitored(): Promise<Device[]>;
   findById(id: string): Promise<Device | null>;
   findByIpAddress(ipAddress: string): Promise<Device | null>;
   update(id: string, data: UpdateDevice): Promise<Device | null>;
@@ -57,6 +58,15 @@ export class DeviceRepository implements IDeviceRepository {
       ...row.devices,
       model: row.device_models ?? undefined,
     }));
+  }
+
+  public async findMonitored(): Promise<Device[]> {
+    const result = await this.db
+      .select()
+      .from(devices)
+      .where(and(eq(devices.is_monitored, true), isNull(devices.deleted_at)));
+
+    return result;
   }
 
   public async findById(id: string): Promise<Device | null> {
