@@ -1,31 +1,27 @@
 import "dotenv/config";
-import type { FastifyInstance } from "fastify";
-import fastify from "fastify";
 import { appConfig } from "./config/app.config.ts";
-import { DrizzleDatabase } from "./infrastructure/db/drizzle.database.ts";
-import { DeviceModelRepository } from "./modules/device/infrastructure/device-model.repository.ts";
-import { DeviceRepository } from "./modules/device/infrastructure/device.repository.ts";
-import { DeviceService } from "./modules/device/application/services/device.service.ts";
-import { DeviceController } from "./modules/device/presentation/controllers/device.controller.ts";
-import { DeviceRoutes } from "./modules/device/presentation/routes/device.route.ts";
+import { Container } from "./infrastructure/di/container.ts";
+import { App } from "./infrastructure/http/app.ts";
+import { Server } from "./infrastructure/http/server.ts";
 
 async function bootstrap() {
-  const db = new DrizzleDatabase(appConfig.databaseUrl);
-  db.connect();
-  const deviceModelRepository = new DeviceModelRepository(db);
-  const deviceRepository = new DeviceRepository(db);
+  const container = await Container.create(appConfig);
+  const app = new App(container, appConfig.nodeEnv);
+  const server = new Server(app, appConfig.port, appConfig.host);
 
-  const deviceService = new DeviceService(
-    deviceRepository,
-    deviceModelRepository,
-  );
+  await server.start();
 
-  const deviceController = new DeviceController(deviceService);
-  const deviceRoutes = new DeviceRoutes(deviceController);
+  const shutdown = async () => {
+    await server.stop();
+    await container.cleanup();
+    process.exit(0);
+  };
 
-  const app: FastifyInstance = fastify({ logger: { level: "info" } });
-  deviceRoutes.register(app);
-  app.listen({ port: appConfig.port, host: appConfig.host });
+  process.on("SIGINT", shutdown);
+  process.on("SIGTERM", shutdown);
 }
 
-await bootstrap();
+bootstrap().catch((error) => {
+  console.error("Failed to start application:", error);
+  process.exit(1);
+});
