@@ -40,16 +40,23 @@ export class Container {
   private retryHttpClient: IHttpClient;
   public monitoringService!: IMonitoringService;
   public monitoringScheduler!: MonitoringScheduler;
+  private intervalMs: number;
 
   constructor(config: AppConfig, database?: IDatabase) {
     this.db = database || new DrizzleDatabase(config.databaseUrl);
     this.httpClient = new HttpClient();
-    this.retryHttpClient = new RetryHttpClient(this.httpClient, 3);
+
+    this.retryHttpClient = new RetryHttpClient(
+      this.httpClient,
+      config.maxRetries,
+    );
 
     this.healthCheckService = new HealthCheckService(
       this.retryHttpClient,
-      2000,
+      config.timeoutMs,
     );
+
+    this.intervalMs = config.intervalMs;
   }
 
   public async init(): Promise<void> {
@@ -80,7 +87,7 @@ export class Container {
 
     this.monitoringScheduler = new MonitoringScheduler(
       this.monitoringService,
-      30000,
+      this.intervalMs,
     );
 
     // Controllers

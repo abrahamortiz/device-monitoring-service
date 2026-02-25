@@ -9,7 +9,10 @@ const AppConfigSchema = z.object({
   port: z.int().positive().default(3000),
   host: z.string().default("0.0.0.0"),
   databaseUrl: z.string().min(1),
-  devicesQty: z.int().min(1).max(246).default(25),
+  devicesQty: z.int().min(1).max(246).default(4),
+  maxRetries: z.int().min(1).max(5).default(3),
+  timeoutMs: z.int().min(500).max(10000).default(2000),
+  intervalMs: z.int().min(5000).max(300000).default(30000),
 });
 
 export type AppConfig = z.infer<typeof AppConfigSchema>;
@@ -22,6 +25,9 @@ function loadConfig(): AppConfig {
     host: process.env.HOST,
     databaseUrl: process.env.DATABASE_URL,
     devicesQty: Number(process.env.DEVICES_QTY),
+    maxRetries: Number(process.env.MAX_RETRIES),
+    timeoutMs: Number(process.env.TIMEOUT_MS),
+    intervalMs: Number(process.env.INTERVAL_MS),
   };
 
   const result = AppConfigSchema.safeParse(config);
