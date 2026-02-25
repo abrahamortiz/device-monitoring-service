@@ -1,21 +1,30 @@
 import type { AppConfig } from "../../config/app.config.ts";
 import type { IDeviceModelRepository } from "../../modules/device/infrastructure/device-model.repository.ts";
 import type { IDeviceRepository } from "../../modules/device/infrastructure/device.repository.ts";
+import {
+  DeviceModelService,
+  type IDeviceModelService,
+} from "../../modules/device/application/services/device-model.service.ts";
 import type { IDeviceService } from "../../modules/device/application/services/device.service.ts";
 import type { IDatabase } from "../db/database.interface.ts";
 import { DeviceModelRepository } from "../../modules/device/infrastructure/device-model.repository.ts";
 import { DeviceRepository } from "../../modules/device/infrastructure/device.repository.ts";
 import { DeviceService } from "../../modules/device/application/services/device.service.ts";
 import { DrizzleDatabase } from "../db/drizzle.database.ts";
+import { DeviceModelController } from "../../modules/device/presentation/controllers/device-model.controller.js";
 import { DeviceController } from "../../modules/device/presentation/controllers/device.controller.js";
+import { DeviceModelRoutes } from "../../modules/device/presentation/routes/device-model.route.js";
 import { DeviceRoutes } from "../../modules/device/presentation/routes/device.route.js";
 
 export class Container {
   private db: IDatabase;
   private deviceModelRepository!: IDeviceModelRepository;
   private deviceRepository!: IDeviceRepository;
+  private deviceModelService!: IDeviceModelService;
   private deviceService!: IDeviceService;
+  private deviceModelController!: DeviceModelController;
   private deviceController!: DeviceController;
+  private deviceModelRoutes!: DeviceModelRoutes;
   private deviceRoutes!: DeviceRoutes;
   private initialized: boolean = false;
 
@@ -33,15 +42,24 @@ export class Container {
     this.deviceRepository = new DeviceRepository(this.db);
 
     // Services
+    this.deviceModelService = new DeviceModelService(
+      this.deviceModelRepository,
+    );
+
     this.deviceService = new DeviceService(
       this.deviceRepository,
       this.deviceModelRepository,
     );
 
     // Controllers
+    this.deviceModelController = new DeviceModelController(
+      this.deviceModelService,
+    );
+
     this.deviceController = new DeviceController(this.deviceService);
 
     // Routes
+    this.deviceModelRoutes = new DeviceModelRoutes(this.deviceModelController);
     this.deviceRoutes = new DeviceRoutes(this.deviceController);
 
     this.initialized = true;
@@ -54,6 +72,11 @@ export class Container {
 
   public getDatabase(): IDatabase {
     return this.db;
+  }
+
+  public getDeviceModelRoutes(): DeviceModelRoutes {
+    this.ensureInitialized();
+    return this.deviceModelRoutes;
   }
 
   public getDeviceRoutes(): DeviceRoutes {

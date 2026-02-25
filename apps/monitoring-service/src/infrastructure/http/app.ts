@@ -30,6 +30,7 @@ export class App {
 
   public async registerRoutes() {
     this.fastifyInstance.get("/health", async () => ({ ok: true }));
+    this.container.getDeviceModelRoutes().register(this.fastifyInstance);
     this.container.getDeviceRoutes().register(this.fastifyInstance);
   }
 
