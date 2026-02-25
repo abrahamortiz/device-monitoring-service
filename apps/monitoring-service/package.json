@@ -27,6 +27,7 @@
   "type": "module",
   "dependencies": {
     "@device-monitoring-service/shared": "workspace:*",
+    "axios": "^1.13.5",
     "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.1",
     "drizzle-seed": "^0.3.1",
