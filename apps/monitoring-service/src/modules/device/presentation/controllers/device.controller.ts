@@ -58,7 +58,7 @@ export class DeviceController extends BaseController {
         request.body,
       );
 
-      return reply.code(200).send(device);
+      return reply.code(200).send(toDeviceResponse(device));
     } catch (error: unknown) {
       return this.handleError(error, request, reply);
     }
