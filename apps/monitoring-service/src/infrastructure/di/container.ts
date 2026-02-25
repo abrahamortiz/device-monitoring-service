@@ -1,25 +1,33 @@
 import type { AppConfig } from "../../config/app.config.ts";
 import type { IDeviceModelRepository } from "../../modules/device/infrastructure/device-model.repository.ts";
 import type { IDeviceRepository } from "../../modules/device/infrastructure/device.repository.ts";
-import {
-  DeviceModelService,
-  type IDeviceModelService,
-} from "../../modules/device/application/services/device-model.service.ts";
+import type { IDeviceModelService } from "../../modules/device/application/services/device-model.service.ts";
 import type { IDeviceService } from "../../modules/device/application/services/device.service.ts";
+import type { IDeviceStatusLogRepository } from "../../modules/monitoring/infrastructure/device-status-log.repository.ts";
+import type { IMonitoringService } from "../../modules/monitoring/application/monitoring.service.ts";
 import type { IDatabase } from "../db/database.interface.ts";
+import type { IHttpClient } from "../http/http-client.ts";
 import { DeviceModelRepository } from "../../modules/device/infrastructure/device-model.repository.ts";
 import { DeviceRepository } from "../../modules/device/infrastructure/device.repository.ts";
+import { DeviceModelService } from "../../modules/device/application/services/device-model.service.ts";
 import { DeviceService } from "../../modules/device/application/services/device.service.ts";
 import { DrizzleDatabase } from "../db/drizzle.database.ts";
 import { DeviceModelController } from "../../modules/device/presentation/controllers/device-model.controller.js";
 import { DeviceController } from "../../modules/device/presentation/controllers/device.controller.js";
 import { DeviceModelRoutes } from "../../modules/device/presentation/routes/device-model.route.js";
 import { DeviceRoutes } from "../../modules/device/presentation/routes/device.route.js";
+import { MonitoringService } from "../../modules/monitoring/application/monitoring.service.ts";
+import { DeviceStatusLogRepository } from "../../modules/monitoring/infrastructure/device-status-log.repository.ts";
+import { HealthCheckService } from "../../modules/monitoring/application/health-check.service.js";
+import { HttpClient } from "../http/http-client.ts";
+import { RetryHttpClient } from "../http/retry-http-client.ts";
+import { MonitoringScheduler } from "../scheduler/monitoring.scheduler.js";
 
 export class Container {
   private db: IDatabase;
   private deviceModelRepository!: IDeviceModelRepository;
   private deviceRepository!: IDeviceRepository;
+  private logRepository!: IDeviceStatusLogRepository;
   private deviceModelService!: IDeviceModelService;
   private deviceService!: IDeviceService;
   private deviceModelController!: DeviceModelController;
@@ -27,9 +35,21 @@ export class Container {
   private deviceModelRoutes!: DeviceModelRoutes;
   private deviceRoutes!: DeviceRoutes;
   private initialized: boolean = false;
+  private healthCheckService: HealthCheckService;
+  private httpClient: IHttpClient;
+  private retryHttpClient: IHttpClient;
+  public monitoringService!: IMonitoringService;
+  public monitoringScheduler!: MonitoringScheduler;
 
   constructor(config: AppConfig, database?: IDatabase) {
     this.db = database || new DrizzleDatabase(config.databaseUrl);
+    this.httpClient = new HttpClient();
+    this.retryHttpClient = new RetryHttpClient(this.httpClient, 3);
+
+    this.healthCheckService = new HealthCheckService(
+      this.retryHttpClient,
+      2000,
+    );
   }
 
   public async init(): Promise<void> {
@@ -40,6 +60,7 @@ export class Container {
     // Repositories
     this.deviceModelRepository = new DeviceModelRepository(this.db);
     this.deviceRepository = new DeviceRepository(this.db);
+    this.logRepository = new DeviceStatusLogRepository(this.db);
 
     // Services
     this.deviceModelService = new DeviceModelService(
@@ -49,6 +70,17 @@ export class Container {
     this.deviceService = new DeviceService(
       this.deviceRepository,
       this.deviceModelRepository,
+    );
+
+    this.monitoringService = new MonitoringService(
+      this.deviceRepository,
+      this.logRepository,
+      this.healthCheckService,
+    );
+
+    this.monitoringScheduler = new MonitoringScheduler(
+      this.monitoringService,
+      30000,
     );
 
     // Controllers
@@ -66,6 +98,7 @@ export class Container {
   }
 
   public async cleanup(): Promise<void> {
+    this.monitoringScheduler.stop();
     await this.db.disconnect();
     this.initialized = false;
   }

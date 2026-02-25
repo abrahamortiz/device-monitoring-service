@@ -10,6 +10,8 @@ async function bootstrap() {
   const server = new Server(app, appConfig.port, appConfig.host);
 
   await server.start();
+  await container.monitoringService.executeMonitoringCycle();
+  container.monitoringScheduler.start();
 
   const shutdown = async () => {
     await server.stop();
