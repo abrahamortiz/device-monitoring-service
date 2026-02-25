@@ -35,6 +35,10 @@ export const CreateDeviceSchema = DeviceSchema.omit({
   updated_at: true,
   deleted_at: true,
   model: true,
+}).partial({
+  hw_version: true,
+  sw_version: true,
+  fw_version: true,
 });
 
 export const UpdateDeviceSchema = DeviceSchema.omit({
