@@ -52,8 +52,8 @@ export class DeviceService implements IDeviceService {
       throw new NotFoundError("Device model", data.model_id);
     }
 
-    const existingDevice = await this.deviceRepository.findByIpAddress(
-      data.ip_address,
+    const existingDevice = await this.deviceRepository.findByBaseUrl(
+      data.base_url,
     );
 
     if (existingDevice) {

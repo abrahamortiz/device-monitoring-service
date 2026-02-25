@@ -4,7 +4,7 @@ import { toDeviceModelResponse } from "./device-model.mapper.ts";
 export function toDeviceResponse(device: Device): DeviceResponse {
   return {
     id: device.id,
-    ip_address: device.ip_address,
+    base_url: device.base_url,
     hw_version: device.hw_version,
     sw_version: device.sw_version,
     fw_version: device.fw_version,

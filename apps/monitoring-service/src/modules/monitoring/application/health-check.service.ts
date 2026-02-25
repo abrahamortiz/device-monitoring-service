@@ -32,11 +32,10 @@ export class HealthCheckService {
 
   async check(device: Device): Promise<HealthCheckExecutionResult> {
     const startedAt = Date.now();
-    const baseUrl = `http://${device.ip_address}`;
 
     try {
       const healthResponse = await this.httpClient.get<HealthCheckResult>(
-        `${baseUrl}/health`,
+        `${device.base_url}/health`,
         { timeout: this.timeoutMs },
       );
 

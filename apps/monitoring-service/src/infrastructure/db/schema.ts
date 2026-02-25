@@ -51,7 +51,7 @@ export const devices = t.pgTable(
       .uuid()
       .notNull()
       .references(() => deviceModels.id),
-    ip_address: t.inet().notNull(),
+    base_url: t.varchar().notNull(),
     hw_version: t.varchar(),
     sw_version: t.varchar(),
     fw_version: t.varchar(),
@@ -64,8 +64,8 @@ export const devices = t.pgTable(
   (table) => {
     return {
       uniqueIpAddressPerActiveDevice: t
-        .uniqueIndex("devices_ip_address_unique")
-        .on(table.ip_address)
+        .uniqueIndex("devices_base_url_unique")
+        .on(table.base_url)
         .where(sql`${table.deleted_at} IS NULL`),
       deletedAtIndex: t.index("devices_deleted_at_idx").on(table.deleted_at),
     };

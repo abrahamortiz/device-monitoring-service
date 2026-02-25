@@ -14,7 +14,7 @@ export interface IDeviceRepository {
   findAll(): Promise<Device[]>;
   findMonitored(): Promise<Device[]>;
   findById(id: string): Promise<Device | null>;
-  findByIpAddress(ipAddress: string): Promise<Device | null>;
+  findByBaseUrl(ipAddress: string): Promise<Device | null>;
   update(id: string, data: UpdateDevice): Promise<Device | null>;
   softDelete(id: string): Promise<boolean>;
 }
@@ -84,11 +84,11 @@ export class DeviceRepository implements IDeviceRepository {
     return null;
   }
 
-  public async findByIpAddress(ipAddress: string): Promise<Device | null> {
+  public async findByBaseUrl(baseUrl: string): Promise<Device | null> {
     const [result] = await this.db
       .select()
       .from(devices)
-      .where(and(eq(devices.ip_address, ipAddress), isNull(devices.deleted_at)))
+      .where(and(eq(devices.base_url, baseUrl), isNull(devices.deleted_at)))
       .limit(1);
 
     return result || null;

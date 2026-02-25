@@ -12,7 +12,7 @@ export const DeviceStatusSchema = z.enum([
 export const DeviceSchema = z.strictObject({
   id: z.uuid(),
   model_id: z.uuid(),
-  ip_address: z.ipv4(),
+  base_url: z.url(),
   hw_version: z.string().nullable(),
   sw_version: z.string().nullable(),
   fw_version: z.string().nullable(),
@@ -52,7 +52,7 @@ export type UpdateDevice = z.infer<typeof UpdateDeviceSchema>;
 
 export type DeviceResponse = {
   id: string;
-  ip_address: string;
+  base_url: string;
   hw_version: string | null;
   sw_version: string | null;
   fw_version: string | null;

@@ -4,8 +4,8 @@ import { reset, seed } from "drizzle-seed";
 import { appConfig } from "../../config/app.config.ts";
 import * as schema from "./schema.ts";
 
-const generateIpAddresses = (qty: number): string[] =>
-  Array.from({ length: qty }, (_, i) => `192.168.1.${10 + i}`);
+const generateBaseUrls = (qty: number): string[] =>
+  Array.from({ length: qty }, (_, i) => `http://device-${i + 1}:3000`);
 
 const main = async () => {
   const { databaseUrl, devicesQty } = appConfig;
@@ -65,8 +65,8 @@ const main = async () => {
           fw_version: f.default({ defaultValue: null }),
           checksum: f.default({ defaultValue: null }),
           latest_status: f.default({ defaultValue: null }),
-          ip_address: f.valuesFromArray({
-            values: generateIpAddresses(devicesQty),
+          base_url: f.valuesFromArray({
+            values: generateBaseUrls(devicesQty),
             isUnique: true,
           }),
           is_monitored: f.default({ defaultValue: true }),
