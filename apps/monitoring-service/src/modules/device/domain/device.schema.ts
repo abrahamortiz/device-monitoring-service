@@ -13,7 +13,6 @@ export const DeviceSchema = z.strictObject({
   fw_version: z.string().nullable(),
   checksum: z.string().nullable(),
   current_status: DeviceStatusSchema.nullable(),
-  support_grpc: z.boolean().default(false),
   is_monitored: z.boolean().default(true),
   last_seen_at: z.date().nullable(),
   created_at: z.date(),
@@ -48,7 +47,6 @@ export type DeviceResponse = {
   fw_version: string | null;
   checksum: string | null;
   current_status: DeviceStatus | null;
-  support_grpc: boolean;
   is_monitored: boolean;
   last_seen_at: Date | null;
   model?: DeviceModelResponse;

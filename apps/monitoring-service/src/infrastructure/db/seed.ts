@@ -65,7 +65,6 @@ const main = async () => {
           fw_version: f.default({ defaultValue: null }),
           checksum: f.default({ defaultValue: null }),
           current_status: f.default({ defaultValue: null }),
-          support_grpc: f.default({ defaultValue: false }),
           ip_address: f.valuesFromArray({
             values: generateIpAddresses(devicesQty),
             isUnique: true,

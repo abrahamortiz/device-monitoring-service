@@ -56,7 +56,6 @@ export const devices = t.pgTable(
     fw_version: t.varchar(),
     checksum: t.varchar(),
     current_status: deviceStatusEnum(),
-    support_grpc: t.boolean().notNull().default(false),
     is_monitored: t.boolean().notNull().default(true),
     last_seen_at: t.timestamp({ withTimezone: true }),
     ...timestamps,
