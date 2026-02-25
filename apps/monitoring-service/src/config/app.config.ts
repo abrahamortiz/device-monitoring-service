@@ -1,7 +1,11 @@
 import * as z from "zod";
 
+const NodeEnvSchema = z
+  .enum(["development", "production"])
+  .default("development");
+
 const AppConfigSchema = z.object({
-  nodeEnv: z.enum(["development", "production"]).default("development"),
+  nodeEnv: NodeEnvSchema,
   port: z.int().positive().default(3000),
   host: z.string().default("0.0.0.0"),
   databaseUrl: z.string().min(1),
@@ -9,6 +13,7 @@ const AppConfigSchema = z.object({
 });
 
 export type AppConfig = z.infer<typeof AppConfigSchema>;
+export type NodeEnv = z.infer<typeof NodeEnvSchema>;
 
 function loadConfig(): AppConfig {
   const config = {
