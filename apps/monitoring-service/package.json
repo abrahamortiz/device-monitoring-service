@@ -1,5 +1,5 @@
 {
-  "name": "@device-monitoring-service/api",
+  "name": "@device-monitoring-service/monitoring-service",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
