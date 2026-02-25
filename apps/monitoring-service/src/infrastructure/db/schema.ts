@@ -35,6 +35,9 @@ export const deviceModels = t.pgTable(
         .uniqueIndex("device_models_name_unique")
         .on(table.name)
         .where(sql`${table.deleted_at} IS NULL`),
+      deletedAtIndex: t
+        .index("device_models_deleted_at_idx")
+        .on(table.deleted_at),
     };
   },
 );
@@ -64,18 +67,29 @@ export const devices = t.pgTable(
         .uniqueIndex("devices_ip_address_unique")
         .on(table.ip_address)
         .where(sql`${table.deleted_at} IS NULL`),
+      deletedAtIndex: t.index("devices_deleted_at_idx").on(table.deleted_at),
     };
   },
 );
 
-export const deviceStatusLog = t.pgTable("device_status_log", {
-  id: t.uuid().primaryKey().defaultRandom(),
-  device_id: t
-    .uuid()
-    .notNull()
-    .references(() => devices.id),
-  status: deviceStatusEnum().notNull(),
-  response_time_ms: t.integer().notNull(),
-  error_message: t.varchar(),
-  checked_at: t.timestamp({ withTimezone: true }).notNull(),
-});
+export const deviceStatusLog = t.pgTable(
+  "device_status_log",
+  {
+    id: t.uuid().primaryKey().defaultRandom(),
+    device_id: t
+      .uuid()
+      .notNull()
+      .references(() => devices.id),
+    status: deviceStatusEnum().notNull(),
+    response_time_ms: t.integer().notNull(),
+    error_message: t.varchar(),
+    checked_at: t.timestamp({ withTimezone: true }).notNull(),
+  },
+  (table) => {
+    return {
+      deviceIdIndex: t
+        .index("device_status_log_device_id_idx")
+        .on(table.device_id),
+    };
+  },
+);
