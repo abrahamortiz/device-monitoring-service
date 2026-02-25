@@ -20,13 +20,24 @@ export const timestamps = {
   deleted_at: t.timestamp({ withTimezone: true }),
 };
 
-export const deviceModels = t.pgTable("device_models", {
-  id: t.uuid().primaryKey().defaultRandom(),
-  category: deviceCategoriesEnum().notNull(),
-  name: t.varchar().notNull().unique(),
-  description: t.varchar(),
-  ...timestamps,
-});
+export const deviceModels = t.pgTable(
+  "device_models",
+  {
+    id: t.uuid().primaryKey().defaultRandom(),
+    category: deviceCategoriesEnum().notNull(),
+    name: t.varchar().notNull(),
+    description: t.varchar(),
+    ...timestamps,
+  },
+  (table) => {
+    return {
+      uniqueNamePerActiveModel: t
+        .uniqueIndex("device_models_name_unique")
+        .on(table.name)
+        .where(sql`${table.deleted_at} IS NULL`),
+    };
+  },
+);
 
 export const devices = t.pgTable(
   "devices",
@@ -50,7 +61,7 @@ export const devices = t.pgTable(
   (table) => {
     return {
       uniqueIpAddressPerActiveDevice: t
-        .uniqueIndex("devices_unique_ip_address")
+        .uniqueIndex("devices_ip_address_unique")
         .on(table.ip_address)
         .where(sql`${table.deleted_at} IS NULL`),
     };
