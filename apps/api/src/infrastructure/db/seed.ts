@@ -58,6 +58,7 @@ const main = async () => {
       devices: {
         count: devicesQty,
         columns: {
+          id: f.default({ defaultValue: undefined }),
           model_id: f.valuesFromArray({ values: modelIds }),
           hw_version: f.default({ defaultValue: null }),
           sw_version: f.default({ defaultValue: null }),
