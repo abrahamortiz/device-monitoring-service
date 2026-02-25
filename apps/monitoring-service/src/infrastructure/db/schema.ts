@@ -9,9 +9,10 @@ export const deviceCategoriesEnum = t.pgEnum("device_categories", [
 ]);
 
 export const deviceStatusEnum = t.pgEnum("device_statuses", [
-  "UP",
-  "DOWN",
-  "ERROR",
+  "UNKNOWN",
+  "ONLINE",
+  "OFFLINE",
+  "DEGRADED",
 ]);
 
 export const timestamps = {
@@ -55,7 +56,7 @@ export const devices = t.pgTable(
     sw_version: t.varchar(),
     fw_version: t.varchar(),
     checksum: t.varchar(),
-    current_status: deviceStatusEnum(),
+    latest_status: deviceStatusEnum().default("UNKNOWN"),
     is_monitored: t.boolean().notNull().default(true),
     last_seen_at: t.timestamp({ withTimezone: true }),
     ...timestamps,

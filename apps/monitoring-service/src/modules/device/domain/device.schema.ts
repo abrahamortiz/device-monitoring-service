@@ -2,7 +2,12 @@ import type { DeviceModelResponse } from "./device-model.schema.ts";
 import * as z from "zod";
 import { DeviceModelSchema } from "./device-model.schema.ts";
 
-export const DeviceStatusSchema = z.enum(["UP", "DOWN", "ERROR"]);
+export const DeviceStatusSchema = z.enum([
+  "UNKNOWN",
+  "ONLINE",
+  "OFFLINE",
+  "DEGRADED",
+]);
 
 export const DeviceSchema = z.strictObject({
   id: z.uuid(),
@@ -12,7 +17,7 @@ export const DeviceSchema = z.strictObject({
   sw_version: z.string().nullable(),
   fw_version: z.string().nullable(),
   checksum: z.string().nullable(),
-  current_status: DeviceStatusSchema.nullable(),
+  latest_status: DeviceStatusSchema.nullable(),
   is_monitored: z.boolean().default(true),
   last_seen_at: z.date().nullable(),
   created_at: z.date(),
@@ -24,7 +29,7 @@ export const DeviceSchema = z.strictObject({
 export const CreateDeviceSchema = DeviceSchema.omit({
   id: true,
   checksum: true,
-  current_status: true,
+  latest_status: true,
   last_seen_at: true,
   created_at: true,
   updated_at: true,
@@ -46,7 +51,7 @@ export type DeviceResponse = {
   sw_version: string | null;
   fw_version: string | null;
   checksum: string | null;
-  current_status: DeviceStatus | null;
+  latest_status: DeviceStatus | null;
   is_monitored: boolean;
   last_seen_at: Date | null;
   model?: DeviceModelResponse;

@@ -9,7 +9,7 @@ export function toDeviceResponse(device: Device): DeviceResponse {
     sw_version: device.sw_version,
     fw_version: device.fw_version,
     checksum: device.checksum,
-    current_status: device.current_status,
+    latest_status: device.latest_status,
     is_monitored: device.is_monitored,
     last_seen_at: device.last_seen_at,
     model: device.model ? toDeviceModelResponse(device.model) : undefined,
