@@ -3,6 +3,7 @@ import type {
   Device,
   UpdateDevice,
 } from "../../domain/device.schema.ts";
+import type { IDeviceModelRepository } from "../../infrastructure/device-model.repository.ts";
 import type { IDeviceRepository } from "../../infrastructure/device.repository.ts";
 import { ConflictError } from "../../../../shared/errors/conflict.error.ts";
 import { DatabaseError } from "../../../../shared/errors/database.error.ts";
@@ -25,9 +26,14 @@ export interface IDeviceService {
 
 export class DeviceService implements IDeviceService {
   private deviceRepository: IDeviceRepository;
+  private deviceModelRepository: IDeviceModelRepository;
 
-  constructor(repository: IDeviceRepository) {
-    this.deviceRepository = repository;
+  constructor(
+    deviceRepository: IDeviceRepository,
+    deviceModelRepository: IDeviceModelRepository,
+  ) {
+    this.deviceRepository = deviceRepository;
+    this.deviceModelRepository = deviceModelRepository;
   }
 
   public async createDevice(data: CreateDevice): Promise<Device> {
@@ -38,6 +44,12 @@ export class DeviceService implements IDeviceService {
         "Invalid data to create device",
         formatZodError(validationResult.error),
       );
+    }
+
+    const model = await this.deviceModelRepository.findById(data.model_id);
+
+    if (!model) {
+      throw new NotFoundError("Device model", data.model_id);
     }
 
     const existingDevice = await this.deviceRepository.findByIpAddress(
