@@ -51,7 +51,7 @@ export class HealthCheckService {
       if (healthResponse.data.capabilities?.protocol === "REST") {
         try {
           const { data } = await this.httpClient.get<DiagnosticsResult>(
-            `${baseUrl}/diagnostics`,
+            `${device.base_url}/diagnostics`,
             { timeout: this.timeoutMs },
           );
 
