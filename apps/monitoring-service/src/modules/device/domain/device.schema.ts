@@ -41,17 +41,21 @@ export const CreateDeviceSchema = DeviceSchema.omit({
   fw_version: true,
 });
 
-export const UpdateDeviceSchema = DeviceSchema.omit({
+export const UpdateDeviceDbSchema = DeviceSchema.omit({
   id: true,
   created_at: true,
-  updated_at: true,
   deleted_at: true,
   model: true,
 }).partial();
 
+export const UpdateDeviceSchema = UpdateDeviceDbSchema.omit({
+  updated_at: true,
+});
+
 export type Device = z.infer<typeof DeviceSchema>;
 export type DeviceStatus = z.infer<typeof DeviceStatusSchema>;
 export type CreateDevice = z.infer<typeof CreateDeviceSchema>;
+export type UpdateDeviceDb = z.infer<typeof UpdateDeviceDbSchema>;
 export type UpdateDevice = z.infer<typeof UpdateDeviceSchema>;
 
 export type DeviceResponse = {

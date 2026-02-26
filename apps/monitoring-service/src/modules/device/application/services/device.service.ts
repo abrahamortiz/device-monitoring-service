@@ -103,7 +103,10 @@ export class DeviceService implements IDeviceService {
     }
 
     try {
-      const updatedDevice = await this.deviceRepository.update(id, data);
+      const updatedDevice = await this.deviceRepository.update(id, {
+        ...data,
+        updated_at: new Date(),
+      });
 
       if (!updatedDevice) {
         throw new ConflictError("Failed to update device");

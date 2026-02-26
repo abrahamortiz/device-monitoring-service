@@ -2,7 +2,7 @@ import type { PgDatabase } from "drizzle-orm/pg-core";
 import type {
   CreateDevice,
   Device,
-  UpdateDevice,
+  UpdateDeviceDb,
 } from "../domain/device.schema.ts";
 import type { IDatabase } from "../../../infrastructure/db/database.interface.ts";
 import { and, eq, isNull } from "drizzle-orm";
@@ -15,7 +15,7 @@ export interface IDeviceRepository {
   findMonitored(): Promise<Device[]>;
   findById(id: string): Promise<Device | null>;
   findByBaseUrl(ipAddress: string): Promise<Device | null>;
-  update(id: string, data: UpdateDevice): Promise<Device | null>;
+  update(id: string, data: UpdateDeviceDb): Promise<Device | null>;
   softDelete(id: string): Promise<boolean>;
 }
 
@@ -94,7 +94,10 @@ export class DeviceRepository implements IDeviceRepository {
     return result || null;
   }
 
-  public async update(id: string, data: UpdateDevice): Promise<Device | null> {
+  public async update(
+    id: string,
+    data: UpdateDeviceDb,
+  ): Promise<Device | null> {
     const [result] = await this.db
       .update(devices)
       .set({ ...data, updated_at: new Date() })
