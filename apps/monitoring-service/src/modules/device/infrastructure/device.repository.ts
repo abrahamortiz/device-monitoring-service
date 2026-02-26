@@ -100,7 +100,7 @@ export class DeviceRepository implements IDeviceRepository {
   ): Promise<Device | null> {
     const [result] = await this.db
       .update(devices)
-      .set({ ...data, updated_at: new Date() })
+      .set(data)
       .where(eq(devices.id, id))
       .returning();
 
