@@ -22,4 +22,11 @@ export default defineConfig([
   },
 
   tseslint.configs.strict,
+
+  {
+    files: ["**/*.test.ts"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+    },
+  },
 ]);
