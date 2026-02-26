@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import type { NodeEnv } from "../../config/app.config.ts";
 import type { Container } from "../di/container.ts";
 import { fastify } from "fastify";
+import { registerSwagger } from "./swagger.plugin.ts";
 
 export class App {
   private container: Container;
@@ -35,6 +36,7 @@ export class App {
   }
 
   public async init() {
+    await registerSwagger(this.fastifyInstance);
     await this.registerRoutes();
   }
 
