@@ -4,6 +4,7 @@ import { HealthCheckService } from "./health-check.service.ts";
 describe("HealthCheckService", () => {
   let service: HealthCheckService;
   let httpClient: any;
+  let checksumValidator: any;
 
   const mockDevice = {
     id: "device-1",
@@ -14,8 +15,11 @@ describe("HealthCheckService", () => {
     httpClient = {
       get: vi.fn(),
     };
+    checksumValidator = {
+      validate: vi.fn().mockResolvedValue(true),
+    };
 
-    service = new HealthCheckService(httpClient, 5000);
+    service = new HealthCheckService(httpClient, checksumValidator, 5000);
   });
 
   it("should return ONLINE when health is UP and diagnostics succeed", async () => {
@@ -68,12 +72,22 @@ describe("HealthCheckService", () => {
     expect(result.log.error_message).toBe("Diagnostics call failed");
   });
 
-  it("should return OFFLINE when health check fails", async () => {
-    httpClient.get.mockRejectedValue(new Error("Timeout"));
+  it("should return DEGRADED when checksum validation fails", async () => {
+    httpClient.get
+      .mockResolvedValueOnce({
+        status: 200,
+        data: { status: "UP", capabilities: { protocol: "REST" } },
+      })
+      .mockResolvedValueOnce({
+        status: 200,
+        data: { checksum: "bad-checksum" },
+      });
+
+    checksumValidator.validate.mockResolvedValueOnce(false);
 
     const result = await service.check(mockDevice);
 
-    expect(result.log.status).toBe("OFFLINE");
-    expect(result.log.error_message).toBe("Timeout");
+    expect(result.log.status).toBe("DEGRADED");
+    expect(result.log.error_message).toBe("Checksum validation failed");
   });
 });
