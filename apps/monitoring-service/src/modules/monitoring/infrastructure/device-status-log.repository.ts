@@ -4,7 +4,7 @@ import type {
   CreateDeviceStatusLog,
   DeviceStatusLog,
 } from "../domain/device-status-log.schema.ts";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { DatabaseError } from "../../../shared/errors/database.error.ts";
 import { deviceStatusLog } from "../../../infrastructure/db/schema.ts";
 
@@ -49,7 +49,8 @@ export class DeviceStatusLogRepository implements IDeviceStatusLogRepository {
     const result = await this.db
       .select()
       .from(deviceStatusLog)
-      .where(eq(deviceStatusLog.device_id, id));
+      .where(eq(deviceStatusLog.device_id, id))
+      .orderBy(desc(deviceStatusLog.checked_at));
 
     return result;
   }
