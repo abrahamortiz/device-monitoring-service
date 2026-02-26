@@ -26,14 +26,15 @@ export const CreateDeviceModelSchema = DeviceModelSchema.omit({
 
 export const UpdateDeviceModelSchema = CreateDeviceModelSchema.partial();
 
+export const DeviceModelResponseSchema = z.object({
+  id: z.uuid(),
+  category: DeviceCategorySchema,
+  name: z.string(),
+  description: z.string().nullable(),
+});
+
 export type DeviceCategory = z.infer<typeof DeviceCategorySchema>;
 export type DeviceModel = z.infer<typeof DeviceModelSchema>;
 export type CreateDeviceModel = z.infer<typeof CreateDeviceModelSchema>;
 export type UpdateDeviceModel = z.infer<typeof UpdateDeviceModelSchema>;
-
-export type DeviceModelResponse = {
-  id: string;
-  category: DeviceCategory;
-  name: string;
-  description: string | null;
-};
+export type DeviceModelResponse = z.infer<typeof DeviceModelResponseSchema>;

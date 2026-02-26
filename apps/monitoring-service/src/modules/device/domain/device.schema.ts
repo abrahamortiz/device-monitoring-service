@@ -48,22 +48,23 @@ export const UpdateDeviceDbSchema = DeviceSchema.omit({
 
 export const UpdateDeviceSchema = CreateDeviceSchema.partial();
 
+export const DeviceResponseSchema = z.object({
+  id: z.uuid(),
+  base_url: z.url(),
+  hw_version: z.string().nullable(),
+  sw_version: z.string().nullable(),
+  fw_version: z.string().nullable(),
+  checksum: z.string().nullable(),
+  latest_status: DeviceStatusSchema.nullable(),
+  is_monitored: z.boolean(),
+  last_seen_at: z.date().nullable(),
+  model: z.string().optional(),
+  category: z.string().optional(),
+});
+
 export type Device = z.infer<typeof DeviceSchema>;
 export type DeviceStatus = z.infer<typeof DeviceStatusSchema>;
 export type CreateDevice = z.infer<typeof CreateDeviceSchema>;
 export type UpdateDeviceDb = z.infer<typeof UpdateDeviceDbSchema>;
 export type UpdateDevice = z.infer<typeof UpdateDeviceSchema>;
-
-export type DeviceResponse = {
-  id: string;
-  base_url: string;
-  hw_version: string | null;
-  sw_version: string | null;
-  fw_version: string | null;
-  checksum: string | null;
-  latest_status: DeviceStatus | null;
-  is_monitored: boolean;
-  last_seen_at: Date | null;
-  model?: string;
-  category?: string;
-};
+export type DeviceResponse = z.infer<typeof DeviceResponseSchema>;
