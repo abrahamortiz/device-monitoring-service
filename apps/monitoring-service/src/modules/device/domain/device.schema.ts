@@ -1,4 +1,3 @@
-import type { DeviceModelResponse } from "./device-model.schema.ts";
 import * as z from "zod";
 import { DeviceModelSchema } from "./device-model.schema.ts";
 
@@ -28,6 +27,9 @@ export const DeviceSchema = z.strictObject({
 
 export const CreateDeviceSchema = DeviceSchema.omit({
   id: true,
+  hw_version: true,
+  sw_version: true,
+  fw_version: true,
   checksum: true,
   latest_status: true,
   last_seen_at: true,
@@ -35,10 +37,6 @@ export const CreateDeviceSchema = DeviceSchema.omit({
   updated_at: true,
   deleted_at: true,
   model: true,
-}).partial({
-  hw_version: true,
-  sw_version: true,
-  fw_version: true,
 });
 
 export const UpdateDeviceDbSchema = DeviceSchema.omit({
@@ -48,9 +46,7 @@ export const UpdateDeviceDbSchema = DeviceSchema.omit({
   model: true,
 }).partial();
 
-export const UpdateDeviceSchema = UpdateDeviceDbSchema.omit({
-  updated_at: true,
-});
+export const UpdateDeviceSchema = CreateDeviceSchema.partial();
 
 export type Device = z.infer<typeof DeviceSchema>;
 export type DeviceStatus = z.infer<typeof DeviceStatusSchema>;
@@ -68,5 +64,6 @@ export type DeviceResponse = {
   latest_status: DeviceStatus | null;
   is_monitored: boolean;
   last_seen_at: Date | null;
-  model?: DeviceModelResponse;
+  model?: string;
+  category?: string;
 };

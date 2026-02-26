@@ -1,5 +1,4 @@
 import type { Device, DeviceResponse } from "../../domain/device.schema.ts";
-import { toDeviceModelResponse } from "./device-model.mapper.ts";
 
 export function toDeviceResponse(device: Device): DeviceResponse {
   return {
@@ -12,6 +11,7 @@ export function toDeviceResponse(device: Device): DeviceResponse {
     latest_status: device.latest_status,
     is_monitored: device.is_monitored,
     last_seen_at: device.last_seen_at,
-    model: device.model ? toDeviceModelResponse(device.model) : undefined,
+    model: device.model?.name,
+    category: device.model?.category,
   };
 }
