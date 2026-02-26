@@ -17,9 +17,9 @@ const idParam = z.object({
 });
 
 const errorResponses = {
-  400: { description: "Validation error", content: { "application/json": { schema: ErrorResponseSchema } } },
-  404: { description: "Device not found", content: { "application/json": { schema: ErrorResponseSchema } } },
-  500: { description: "Internal server error", content: { "application/json": { schema: ErrorResponseSchema } } },
+  400: ErrorResponseSchema.describe("Validation error"),
+  404: ErrorResponseSchema.describe("Not found"),
+  500: ErrorResponseSchema.describe("Internal server error"),
 };
 
 export class DeviceRoutes {
@@ -40,7 +40,7 @@ export class DeviceRoutes {
             summary: "Register a new device",
             body: CreateDeviceSchema,
             response: {
-              201: { description: "Device created", content: { "application/json": { schema: DeviceResponseSchema } } },
+              201: DeviceResponseSchema.describe("Device created"),
               ...errorResponses,
             },
           },
@@ -52,10 +52,7 @@ export class DeviceRoutes {
             tags,
             summary: "List all devices",
             response: {
-              200: {
-                description: "List of devices",
-                content: { "application/json": { schema: z.array(DeviceResponseSchema) } },
-              },
+              200: z.array(DeviceResponseSchema).describe("List of devices"),
               ...errorResponses,
             },
           },
@@ -68,7 +65,7 @@ export class DeviceRoutes {
             summary: "Get a device by ID",
             params: idParam,
             response: {
-              200: { description: "Device found", content: { "application/json": { schema: DeviceResponseSchema } } },
+              200: DeviceResponseSchema.describe("Device found"),
               ...errorResponses,
             },
           },
@@ -79,17 +76,13 @@ export class DeviceRoutes {
           schema: {
             tags,
             summary: "Get device status history",
-            description: "Returns the monitoring status log for a specific device.",
+            description:
+              "Returns the monitoring status log for a specific device.",
             params: idParam,
             response: {
-              200: {
-                description: "Device status history",
-                content: {
-                  "application/json": {
-                    schema: z.array(DeviceStatusLogSchema),
-                  },
-                },
-              },
+              200: z
+                .array(DeviceStatusLogSchema)
+                .describe("Device status history"),
               ...errorResponses,
             },
           },
@@ -103,7 +96,7 @@ export class DeviceRoutes {
             params: idParam,
             body: UpdateDeviceSchema,
             response: {
-              200: { description: "Device updated", content: { "application/json": { schema: DeviceResponseSchema } } },
+              200: DeviceResponseSchema.describe("Device updated"),
               ...errorResponses,
             },
           },
@@ -116,7 +109,7 @@ export class DeviceRoutes {
             summary: "Delete a device",
             params: idParam,
             response: {
-              200: { description: "Device deleted" },
+              200: z.object({}).describe("Device deleted"),
               ...errorResponses,
             },
           },

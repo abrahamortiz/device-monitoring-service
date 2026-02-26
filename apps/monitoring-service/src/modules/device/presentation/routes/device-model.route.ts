@@ -16,9 +16,9 @@ const idParam = z.object({
 });
 
 const errorResponses = {
-  400: { description: "Validation error", content: { "application/json": { schema: ErrorResponseSchema } } },
-  404: { description: "Device model not found", content: { "application/json": { schema: ErrorResponseSchema } } },
-  500: { description: "Internal server error", content: { "application/json": { schema: ErrorResponseSchema } } },
+  400: ErrorResponseSchema.describe("Validation error"),
+  404: ErrorResponseSchema.describe("Not found"),
+  500: ErrorResponseSchema.describe("Internal server error"),
 };
 
 export class DeviceModelRoutes {
@@ -39,7 +39,7 @@ export class DeviceModelRoutes {
             summary: "Create a new device model",
             body: CreateDeviceModelSchema,
             response: {
-              201: { description: "Device model created", content: { "application/json": { schema: DeviceModelResponseSchema } } },
+              201: DeviceModelResponseSchema.describe("Device model created"),
               ...errorResponses,
             },
           },
@@ -51,10 +51,9 @@ export class DeviceModelRoutes {
             tags,
             summary: "List all device models",
             response: {
-              200: {
-                description: "List of device models",
-                content: { "application/json": { schema: z.array(DeviceModelResponseSchema) } },
-              },
+              200: z
+                .array(DeviceModelResponseSchema)
+                .describe("List of device models"),
               ...errorResponses,
             },
           },
@@ -67,7 +66,7 @@ export class DeviceModelRoutes {
             summary: "Get a device model by ID",
             params: idParam,
             response: {
-              200: { description: "Device model found", content: { "application/json": { schema: DeviceModelResponseSchema } } },
+              200: DeviceModelResponseSchema.describe("Device model found"),
               ...errorResponses,
             },
           },
@@ -81,7 +80,7 @@ export class DeviceModelRoutes {
             params: idParam,
             body: UpdateDeviceModelSchema,
             response: {
-              200: { description: "Device model updated", content: { "application/json": { schema: DeviceModelResponseSchema } } },
+              200: DeviceModelResponseSchema.describe("Device model updated"),
               ...errorResponses,
             },
           },
@@ -94,7 +93,7 @@ export class DeviceModelRoutes {
             summary: "Delete a device model",
             params: idParam,
             response: {
-              200: { description: "Device model deleted" },
+              200: z.object({}).describe("Device model deleted"),
               ...errorResponses,
             },
           },

@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import {
+  jsonSchemaTransform,
   serializerCompiler,
   validatorCompiler,
 } from "fastify-type-provider-zod";
@@ -40,6 +41,7 @@ export async function registerSwagger(app: FastifyInstance): Promise<void> {
         },
       ],
     },
+    transform: jsonSchemaTransform,
   });
 
   await app.register(swaggerUi, {
