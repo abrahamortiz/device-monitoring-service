@@ -18,7 +18,8 @@ import { DeviceModelRoutes } from "../../modules/device/presentation/routes/devi
 import { DeviceRoutes } from "../../modules/device/presentation/routes/device.route.js";
 import { MonitoringService } from "../../modules/monitoring/application/monitoring.service.ts";
 import { DeviceStatusLogRepository } from "../../modules/monitoring/infrastructure/device-status-log.repository.ts";
-import { HealthCheckService } from "../../modules/monitoring/application/health-check.service.js";
+import { ExternalChecksumValidator } from "../../modules/monitoring/application/checksum-validator.service.ts";
+import { HealthCheckService } from "../../modules/monitoring/application/health-check.service.ts";
 import { HttpClient } from "../http/http-client.ts";
 import { RetryHttpClient } from "../http/retry-http-client.ts";
 import { MonitoringScheduler } from "../scheduler/monitoring.scheduler.js";
@@ -40,6 +41,7 @@ export class Container {
   private retryHttpClient: IHttpClient;
   public monitoringService!: IMonitoringService;
   public monitoringScheduler!: MonitoringScheduler;
+  private checksumValidator: ExternalChecksumValidator;
   private intervalMs: number;
 
   constructor(config: AppConfig, database?: IDatabase) {
@@ -51,8 +53,11 @@ export class Container {
       config.maxRetries,
     );
 
+    this.checksumValidator = new ExternalChecksumValidator();
+
     this.healthCheckService = new HealthCheckService(
       this.retryHttpClient,
+      this.checksumValidator,
       config.timeoutMs,
     );
 

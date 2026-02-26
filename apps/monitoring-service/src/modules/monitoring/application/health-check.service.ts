@@ -8,6 +8,7 @@ import type {
   DeviceStatus,
 } from "../../device/domain/device.schema.ts";
 import type { CreateDeviceStatusLog } from "../domain/device-status-log.schema.ts";
+import type { IChecksumValidator } from "./checksum-validator.service.ts";
 
 type Snapshot = {
   hw_version: string;
@@ -23,10 +24,16 @@ export type HealthCheckExecutionResult = {
 
 export class HealthCheckService {
   private httpClient: IHttpClient;
+  private checksumValidator: IChecksumValidator;
   private timeoutMs: number;
 
-  constructor(httpClient: IHttpClient, timeoutMs: number) {
+  constructor(
+    httpClient: IHttpClient,
+    checksumValidator: IChecksumValidator,
+    timeoutMs: number,
+  ) {
     this.httpClient = httpClient;
+    this.checksumValidator = checksumValidator;
     this.timeoutMs = timeoutMs;
   }
 
@@ -54,6 +61,20 @@ export class HealthCheckService {
             `${device.base_url}/diagnostics`,
             { timeout: this.timeoutMs },
           );
+
+          const isChecksumValid = await this.checksumValidator.validate(
+            JSON.stringify(data),
+            data.checksum,
+          );
+
+          if (!isChecksumValid) {
+            return this.buildResult(
+              device,
+              "DEGRADED",
+              startedAt,
+              "Checksum validation failed",
+            );
+          }
 
           return this.buildResult(device, "ONLINE", startedAt, null, {
             hw_version: data.hardware_version,
