@@ -1,0 +1,26 @@
+{
+  "name": "@device-monitoring-service/device-emulator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx --watch src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsup --format esm --env.NODE_ENV production"
+  },
+  "keywords": [],
+  "author": "Abraham Ortiz",
+  "license": "ISC",
+  "packageManager": "pnpm@10.26.0",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^25.3.0",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@device-monitoring-service/shared": "workspace:*",
+    "fastify": "^5.7.4"
+  }
+}
