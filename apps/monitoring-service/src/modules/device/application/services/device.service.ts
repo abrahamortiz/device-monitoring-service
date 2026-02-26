@@ -1,3 +1,4 @@
+import type { IDeviceStatusLogRepository } from "../../../monitoring/infrastructure/device-status-log.repository.ts";
 import type {
   CreateDevice,
   Device,
@@ -15,11 +16,13 @@ import {
   CreateDeviceSchema,
   UpdateDeviceSchema,
 } from "../../domain/device.schema.ts";
+import type { DeviceStatusLog } from "../../../monitoring/domain/device-status-log.schema.ts";
 
 export interface IDeviceService {
   createDevice(data: CreateDevice): Promise<Device>;
   getAllDevices(): Promise<Device[]>;
   getDevice(id: string): Promise<Device>;
+  getDeviceLog(id: string): Promise<DeviceStatusLog[]>;
   updateDevice(id: string, data: UpdateDevice): Promise<Device>;
   deleteDevice(id: string): Promise<void>;
 }
@@ -27,13 +30,16 @@ export interface IDeviceService {
 export class DeviceService implements IDeviceService {
   private deviceRepository: IDeviceRepository;
   private deviceModelRepository: IDeviceModelRepository;
+  private deviceLogRepository: IDeviceStatusLogRepository;
 
   constructor(
     deviceRepository: IDeviceRepository,
     deviceModelRepository: IDeviceModelRepository,
+    deviceLogRepository: IDeviceStatusLogRepository,
   ) {
     this.deviceRepository = deviceRepository;
     this.deviceModelRepository = deviceModelRepository;
+    this.deviceLogRepository = deviceLogRepository;
   }
 
   public async createDevice(data: CreateDevice): Promise<Device> {
@@ -83,6 +89,19 @@ export class DeviceService implements IDeviceService {
     }
 
     return device;
+  }
+
+  public async getDeviceLog(id: string): Promise<DeviceStatusLog[]> {
+    await validateId(id);
+    const device = await this.deviceRepository.findById(id);
+
+    if (!device) {
+      throw new NotFoundError("Device", id);
+    }
+
+    const log = await this.deviceLogRepository.findByDevice(id);
+
+    return log;
   }
 
   public async updateDevice(id: string, data: UpdateDevice): Promise<Device> {

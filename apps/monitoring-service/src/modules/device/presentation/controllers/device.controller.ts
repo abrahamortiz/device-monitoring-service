@@ -48,6 +48,18 @@ export class DeviceController extends BaseController {
     }
   };
 
+  public getDeviceLog = async (
+    request: FastifyRequest<{ Params: { id: string } }>,
+    reply: FastifyReply,
+  ) => {
+    try {
+      const log = await this.deviceService.getDeviceLog(request.params.id);
+      return reply.code(200).send(log);
+    } catch (error: unknown) {
+      return this.handleError(error, request, reply);
+    }
+  };
+
   public updateDevice = async (
     request: FastifyRequest<{ Params: { id: string }; Body: UpdateDevice }>,
     reply: FastifyReply,

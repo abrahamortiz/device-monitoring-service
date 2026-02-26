@@ -27,7 +27,7 @@ export class Container {
   private db: IDatabase;
   private deviceModelRepository!: IDeviceModelRepository;
   private deviceRepository!: IDeviceRepository;
-  private logRepository!: IDeviceStatusLogRepository;
+  private deviceLogRepository!: IDeviceStatusLogRepository;
   private deviceModelService!: IDeviceModelService;
   private deviceService!: IDeviceService;
   private deviceModelController!: DeviceModelController;
@@ -67,7 +67,7 @@ export class Container {
     // Repositories
     this.deviceModelRepository = new DeviceModelRepository(this.db);
     this.deviceRepository = new DeviceRepository(this.db);
-    this.logRepository = new DeviceStatusLogRepository(this.db);
+    this.deviceLogRepository = new DeviceStatusLogRepository(this.db);
 
     // Services
     this.deviceModelService = new DeviceModelService(
@@ -77,11 +77,12 @@ export class Container {
     this.deviceService = new DeviceService(
       this.deviceRepository,
       this.deviceModelRepository,
+      this.deviceLogRepository,
     );
 
     this.monitoringService = new MonitoringService(
       this.deviceRepository,
-      this.logRepository,
+      this.deviceLogRepository,
       this.healthCheckService,
     );
 

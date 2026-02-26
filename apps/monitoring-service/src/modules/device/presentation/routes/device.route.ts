@@ -14,6 +14,7 @@ export class DeviceRoutes {
         devices.post("/", this.controller.createDevice);
         devices.get("/", this.controller.getAllDevices);
         devices.get("/:id", this.controller.getDevice);
+        devices.get("/:id/status-history", this.controller.getDeviceLog);
         devices.patch("/:id", this.controller.updateDevice);
         devices.delete("/:id", this.controller.deleteDevice);
       },
